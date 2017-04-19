@@ -1,4 +1,4 @@
-package DFPAPI.project;
+package dfpAPI.project;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -65,6 +65,53 @@ public class Spreadsheet {
 		return values;
 	}
 
+	public static ArrayList<ArrayList> readXLSFileForLIDPairs(String filepath) throws IOException {
+		InputStream ExcelFileToRead = new FileInputStream(filepath);
+		HSSFWorkbook wb = new HSSFWorkbook(ExcelFileToRead);
+
+		HSSFSheet sheet = wb.getSheetAt(0);
+		HSSFRow row;
+		HSSFCell cell;
+		ArrayList<ArrayList> sets = new ArrayList<ArrayList>();
+
+		Iterator<Row> rows = sheet.rowIterator();
+
+		while (rows.hasNext()) {
+			row = (HSSFRow) rows.next();
+
+			// specify column to read from
+			HSSFCell cellA = row.getCell(0);
+			HSSFCell cellC = row.getCell(2);
+			if (cellA != null) {
+				int cellAValue;
+				int cellCValue;
+				switch (cellA.getCellTypeEnum()) {
+
+				case NUMERIC:
+					cellAValue = (int) cellA.getNumericCellValue();
+					if (cellC != null) {
+						switch (cellC.getCellTypeEnum()) {
+
+						case NUMERIC:
+							cellCValue = (int) cellC.getNumericCellValue();
+							ArrayList<Integer> LIDset = new ArrayList<Integer>();
+							LIDset.add(cellAValue);
+							LIDset.add(cellCValue);
+							sets.add(LIDset);
+
+						default:
+							break;
+						}
+					}	
+						
+				default:
+					break;
+				}
+			}
+		}
+		return sets;
+	}
+
 	public static void writeXLSFile(ArrayList<ArrayList> sourceList) throws IOException {
 
 		// name of excel file
@@ -82,13 +129,13 @@ public class Spreadsheet {
 			ArrayList<String> line = sourceList.get(r);
 
 			// iterating c number of columns
-			for (String x : line) {
-				int elements = line.size();
-				for (int c = 0; c < elements; c++) {
-					HSSFCell cell = row.createCell(c);
+			
+			int elements = line.size();
+			for (int c = 0; c < elements; c++) {
+				HSSFCell cell = row.createCell(c);
 
-					cell.setCellValue(line.get(c));
-				}
+				cell.setCellValue(line.get(c));
+			
 			}
 		}
 
@@ -101,19 +148,8 @@ public class Spreadsheet {
 	}
 
 	public static void main(String[] args) throws Exception {
-		ArrayList<Integer> LIDs = readXLSFile();
-		String LIDString = (String) LIDs.toString();
-
-		// Generate a refreshable OAuth2 credential.
-		Credential oAuth2Credential = new OfflineCredentials.Builder().forApi(Api.DFP).fromFile().build()
-				.generateCredential();
-
-		// Construct a DfpSession.
-		DfpSession session = new DfpSession.Builder().fromFile().withOAuth2Credential(oAuth2Credential).build();
-
-		DfpServices dfpServices = new DfpServices();
-
-		ArrayList<ArrayList> lineInfo = LineItemMethods.returnLineInfo(dfpServices, session, LIDString);
-		//writeXLSFile(lineInfo);
+		String workbookPath = "C:\\Users\\mthompson\\Downloads\\testsource.xls";
+		
+		ArrayList<ArrayList> LIDSets = readXLSFileForLIDPairs(workbookPath);
 	}
 }

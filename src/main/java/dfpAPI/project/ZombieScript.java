@@ -1,4 +1,4 @@
-package DFPAPI.project;
+package dfpAPI.project;
 
 
 import java.util.ArrayList;
@@ -8,8 +8,8 @@ import com.google.api.ads.common.lib.auth.OfflineCredentials.Api;
 import com.google.api.ads.dfp.lib.client.DfpSession;
 import com.google.api.client.auth.oauth2.Credential;
 
-import DFPAPI.project.LineItemMethods;
-import DFPAPI.project.Spreadsheet;
+import dfpAPI.project.LineItemMethods;
+import dfpAPI.project.Spreadsheet;
 
 import com.google.api.ads.dfp.axis.factory.DfpServices;
 
