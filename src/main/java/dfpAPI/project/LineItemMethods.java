@@ -44,7 +44,6 @@ public class LineItemMethods {
 
 		// Default for total result set size.
 		int totalResultSetSize = 0;
-		// ArrayList<String[]> LineInfo = new ArrayList<String[]>();
 		ArrayList<ArrayList> dfpData = new ArrayList<ArrayList>();
 
 		do {
@@ -59,21 +58,10 @@ public class LineItemMethods {
 					String id = lineItem.getId().toString();
 					String name = lineItem.getName();
 					String status = lineItem.getStatus().toString();
-					// boolean isMissingCreatives =
-					// lineItem.getIsMissingCreatives();
-					// String[] token = new String[3];
 					ArrayList<String> token = new ArrayList<String>();
-					// token[0] = (id);
-					// token[1] = name;
-					// token[2] = status;
 					token.add(id);
 					token.add(name);
 					token.add(status);
-					// token.add(isMissingCreatives);
-					// System.out.printf(
-					// "%d) Line item with ID %d and name '%s' was found.%n",
-					// i++,
-					// lineItem.getId(), lineItem.getName());
 					dfpData.add(token);
 
 				}
@@ -179,9 +167,6 @@ public class LineItemMethods {
 			          }
 			        	if (LICAList.containsKey(lineItemId)) {
 			        		LICAList.get(lineItemId).add(creativeID);
-			        		//List<String> newList = LICAList.get(lineItemId);
-			        			//	newList.add(creativeID);
-	        				//LICAList.put(lineItemId, newList);
 			        	} else {
 			        		LICAList.put(lineItemId, creativeIDs);
 			        	}
@@ -312,7 +297,7 @@ public class LineItemMethods {
 	    	System.out.println(LICA);
 	    	}
 	    }
-	    
+	    System.out.println("\n\n<end failed LICAs>");
 	    HashSet<String> setOfUpdatedLineItems = new HashSet<String>(updatedLineItems);
 
 	    return setOfUpdatedLineItems;
@@ -346,11 +331,6 @@ public class LineItemMethods {
 	
 		      if (page.getResults() != null) {
 		        totalResultSetSize = page.getTotalResultSetSize();
-		        int i = page.getStartIndex();
-		        for (LineItem lineItem : page.getResults()) {
-		          System.out.printf(
-		              "%d) Line item with ID %d will be activated.%n", i++, lineItem.getId());
-	        }
 	      }
 	    	} catch (Exception e) {
 	    		System.out.println("Something went wrong assembling the query to activate Line Items.");

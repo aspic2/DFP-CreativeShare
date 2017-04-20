@@ -75,26 +75,9 @@ public class CreativeShare {
 		Map<String, String> creativeSizes = LineItemMethods.getCreativeSizes(
 				dfpServices, session, creativeIDString);
 		
-		/*System.out.println(creativesList);
-		System.out.println(creativeSizes);
-		System.out.println(oldLICAs);
-		System.out.println(newLineItemSizes);
-		System.out.println(newLIDs);
-		System.out.println();
-		*/
-		
 		HashSet<String> traffickedLIDs = LineItemMethods.createLICAs(
 				dfpServices, session, LIDSets, newLineItemSizes, oldLICAs, creativeSizes);
 		
-		/*System.out.println("Here are your trafficked Line Items:");
-		int c = 0;
-		for (String LID : traffickedLIDs) {
-			c++;
-			System.out.print(c);
-			System.out.print(") ");
-			System.out.println(LID);	
-		}
-		*/
 		String traffickedLIDsString = traffickedLIDs.toString();
 		LineItemMethods.activateLineItems(dfpServices, session, traffickedLIDsString);
 		
