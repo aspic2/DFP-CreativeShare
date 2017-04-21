@@ -62,6 +62,7 @@ public class Spreadsheet {
 				}
 			}
 		}
+		wb.close();
 		return values;
 	}
 
@@ -109,6 +110,7 @@ public class Spreadsheet {
 				}
 			}
 		}
+		wb.close();
 		return sets;
 	}
 
@@ -143,6 +145,7 @@ public class Spreadsheet {
 
 		// write this workbook to an Outputstream.
 		wb.write(fileOut);
+		wb.close();
 		fileOut.flush();
 		fileOut.close();
 	}
