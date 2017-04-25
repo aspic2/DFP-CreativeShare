@@ -17,16 +17,21 @@ import com.google.api.ads.dfp.axis.factory.DfpServices;
 public class ZombieScript {
 
 	public static void main(String[] args) throws Exception {
-		ArrayList<Integer> LIDs = Spreadsheet.readXLSFile();
+		// specify source file here
+		String filepath = "C:\\dvStuff\\ZombieScriptSource.xls";
+		ArrayList<Integer> LIDs = Spreadsheet.readXLSFile(filepath);
 		String LIDString = (String) LIDs.toString();
 
-		// Generate a refreshable OAuth2 credential.
-		Credential oAuth2Credential = new OfflineCredentials.Builder().forApi(Api.DFP).fromFile().build()
+
+		Credential oAuth2Credential = new OfflineCredentials.Builder()
+				.forApi(Api.DFP)
+				.fromFile()
+				.build()
 				.generateCredential();
-
-		// Construct a DfpSession.
-		DfpSession session = new DfpSession.Builder().fromFile().withOAuth2Credential(oAuth2Credential).build();
-
+		DfpSession session = new DfpSession.Builder()
+				.fromFile()
+				.withOAuth2Credential(oAuth2Credential)
+				.build();
 		DfpServices dfpServices = new DfpServices();
 
 		ArrayList<ArrayList> lineInfo = LineItemMethods.returnLineInfo(dfpServices, session, LIDString);

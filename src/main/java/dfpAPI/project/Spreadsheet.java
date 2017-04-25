@@ -1,3 +1,9 @@
+/* All of the spreadsheet methods used for ZombieScript and CreativeShare
+ * Currently only supports .xls files. Will add support for .xlsx and .xlsm
+ * in the future. 
+ * Two read methods 1) readXLSFile and 2) readXLSFileForLIDPairs
+ * 1 is for ZombieScript. 2 is for CreativeShare
+ */
 package dfpAPI.project;
 
 import java.io.FileInputStream;
@@ -32,9 +38,8 @@ import com.google.api.client.auth.oauth2.Credential;
 
 public class Spreadsheet {
 
-	public static ArrayList<Integer> readXLSFile() throws IOException {
-		InputStream ExcelFileToRead = new FileInputStream(
-				"C:\\Users\\mthompson\\Downloads\\ZombieOrderLinesReport_04-10-2017_pt1.xls");
+	public static ArrayList<Integer> readXLSFile(String filepath) throws IOException {
+		InputStream ExcelFileToRead = new FileInputStream(filepath);
 		HSSFWorkbook wb = new HSSFWorkbook(ExcelFileToRead);
 
 		HSSFSheet sheet = wb.getSheetAt(0);
@@ -47,7 +52,7 @@ public class Spreadsheet {
 		while (rows.hasNext()) {
 			row = (HSSFRow) rows.next();
 
-			// specify column to read from
+			// specify column from which to read
 			HSSFCell contents = row.getCell(4);
 			if (contents != null) {
 				int value;
@@ -80,7 +85,7 @@ public class Spreadsheet {
 		while (rows.hasNext()) {
 			row = (HSSFRow) rows.next();
 
-			// specify column to read from
+			// specify columns from which to read
 			HSSFCell cellA = row.getCell(0);
 			HSSFCell cellC = row.getCell(2);
 			if (cellA != null) {
@@ -117,7 +122,7 @@ public class Spreadsheet {
 	public static void writeXLSFile(ArrayList<ArrayList> sourceList) throws IOException {
 
 		// name of excel file
-		String excelFileName = "C:\\Users\\mthompson\\Downloads\\ZRResults_04-17-2017_pt1.xls";
+		String excelFileName = "C:\\dvStuff\\ZombieScriptResults.xls";
 
 		// name of sheet
 		String sheetName = "Zombie Report";
@@ -131,7 +136,6 @@ public class Spreadsheet {
 			ArrayList<String> line = sourceList.get(r);
 
 			// iterating c number of columns
-			
 			int elements = line.size();
 			for (int c = 0; c < elements; c++) {
 				HSSFCell cell = row.createCell(c);
@@ -143,7 +147,6 @@ public class Spreadsheet {
 
 		FileOutputStream fileOut = new FileOutputStream(excelFileName);
 
-		// write this workbook to an Outputstream.
 		wb.write(fileOut);
 		wb.close();
 		fileOut.flush();
@@ -151,8 +154,16 @@ public class Spreadsheet {
 	}
 
 	public static void main(String[] args) throws Exception {
-		String workbookPath = "C:\\Users\\mthompson\\Downloads\\testsource.xls";
 		
+		//for readXLSFile
+		String zombieScriptSource = "C:\\dvStuff\\ZombieOrderLinesReport_04-10-2017_pt1.xls";
+		ArrayList<Integer> listOfLIDs = readXLSFile(zombieScriptSource);
+		
+		//for readXLSFileForLIDPairs
+		String workbookPath = "C:\\dvStuff\\testsource.xls";
 		ArrayList<ArrayList> LIDSets = readXLSFileForLIDPairs(workbookPath);
+		
+		//for writeXLSFile
+		writeXLSFile(LIDSets);
 	}
 }

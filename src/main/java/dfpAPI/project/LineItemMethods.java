@@ -27,11 +27,13 @@ import com.google.api.ads.dfp.axis.v201702.UpdateResult;
 import com.google.api.ads.dfp.lib.client.DfpSession;
 import com.google.api.client.auth.oauth2.Credential;
 
+//TODO: rename this class and all mentions of it. 
+//TODO: class includes Creative and LICA methods in addition to Line Item methods
 public class LineItemMethods {
 
 	public static ArrayList<ArrayList> returnLineInfo(
 			DfpServices dfpServices, DfpSession session, String LIDs) throws Exception {
-
+		//This formatting is required for the PQL query
 		String LIDQuery = LIDs.replace("]", ")").replace("[", "(");
 		// Get the LineItemService.
 		LineItemServiceInterface lineItemService = dfpServices
@@ -54,6 +56,7 @@ public class LineItemMethods {
 			if (page.getResults() != null) {
 				totalResultSetSize = page.getTotalResultSetSize();
 				int i = page.getStartIndex();
+				//Create tokens of chosen line info to go into spreadsheet
 				for (LineItem lineItem : page.getResults()) {
 					String id = lineItem.getId().toString();
 					String name = lineItem.getName();
@@ -76,15 +79,16 @@ public class LineItemMethods {
 	
 	public static Map<String, List<String>> getLineSizes(
 			DfpServices dfpServices, DfpSession session, String LIDs) throws Exception {
-
+		//PQL query syntax requires parentheses
 		String LIDQuery = LIDs.replace("]", ")").replace("[", "(");
 		// Get the LineItemService.
 		LineItemServiceInterface lineItemService = dfpServices
 				.get(session, LineItemServiceInterface.class);
 
-		// Create a statement to select all line items.
+		// Build query for specified line items.
 		StatementBuilder statementBuilder = new StatementBuilder()
-				.where("id IN " + LIDQuery).orderBy("id ASC")
+				.where("id IN " + LIDQuery)
+				.orderBy("id ASC")
 				.limit(StatementBuilder.SUGGESTED_PAGE_LIMIT);
 
 		// Default for total result set size.
@@ -100,11 +104,13 @@ public class LineItemMethods {
 			if (page.getResults() != null) {
 				totalResultSetSize = page.getTotalResultSetSize();
 				int i = page.getStartIndex();
+				//create mapping for IDs and sizes
 				for (LineItem lineItem : page.getResults()) {
 					String id = lineItem.getId().toString();
 					CreativePlaceholder[] placeholders = lineItem.getCreativePlaceholders();
 					List<String> sizes = new ArrayList<String>();
 					for (CreativePlaceholder x : placeholders) {
+						//put sizes in standard format: "WidthxHeight"
 						String slotSize = x.getSize().getWidth().toString() +
 								"x" + 
 								x.getSize().getHeight().toString();
@@ -124,13 +130,13 @@ public class LineItemMethods {
 	
 	public static Map<String, List<String>> getLICAs(DfpServices dfpServices, 
 			DfpSession session, String LIDs) throws Exception {
-		
+		//PQL syntax requires parentheses
 		String LIDQuery = LIDs.replace("]", ")").replace("[", "(");
 		
 		LineItemCreativeAssociationServiceInterface lineItemCreativeAssociationService =
 		        dfpServices.get(session, LineItemCreativeAssociationServiceInterface.class);
 
-		    // Create a statement to select line item creative associations.
+		    // Create a statement to select LICAs for specified Line Items.
 		    StatementBuilder statementBuilder = new StatementBuilder()
 		        .where("lineItemId IN " + LIDQuery)
 		        .orderBy("lineItemId ASC, creativeId ASC")
@@ -144,7 +150,8 @@ public class LineItemMethods {
 		      LineItemCreativeAssociationPage page =
 		          lineItemCreativeAssociationService
 		          .getLineItemCreativeAssociationsByStatement(statementBuilder.toStatement());
-
+		      
+		      //get all active creative for LIDs listed
 		      if (page.getResults() != null) {
 		        totalResultSetSize = page.getTotalResultSetSize();
 		        int i = page.getStartIndex();
@@ -165,6 +172,8 @@ public class LineItemMethods {
 			        	  creativeIDs.add(creativeID);
 			        	  i++;
 			          }
+			        	//TODO: Is there a more efficient way to add
+			        	//TODO: new values to a list?
 			        	if (LICAList.containsKey(lineItemId)) {
 			        		LICAList.get(lineItemId).add(creativeID);
 			        	} else {
@@ -176,7 +185,7 @@ public class LineItemMethods {
 
 		      statementBuilder.increaseOffsetBy(StatementBuilder.SUGGESTED_PAGE_LIMIT);
 		    } while (statementBuilder.getOffset() < totalResultSetSize);
-
+		    //TODO: remove or make this info more useful
 		    System.out.printf("getLICAs--Number of results found: %d%n", totalResultSetSize);
 		    System.out.println("*number does not exclude inactive creative");
 		return LICAList;
@@ -186,6 +195,7 @@ public class LineItemMethods {
 	
 	public static Map<String, String> getCreativeSizes(DfpServices dfpServices, 
 			DfpSession session, String creativeIDs) throws Exception {
+		//PQL Query requires parentheses
 		String idQuery = creativeIDs.replace("]", ")").replace("[", "(");
 		Map<String, String> creativeSizes = new HashMap<String, String>();
 		CreativeServiceInterface creativeService =
@@ -205,11 +215,11 @@ public class LineItemMethods {
 		          creativeService.getCreativesByStatement(statementBuilder.toStatement());
 
 		      if (page.getResults() != null) {
-		        // Print out some information for each creative.
 		        totalResultSetSize = page.getTotalResultSetSize();
 		        int i = page.getStartIndex();
 		        for (Creative creative : page.getResults()) {
 		          String creativeID = creative.getId().toString();
+		          //Convert sizes to standard format: WidthxHeight
 		          String creativeSize = creative.getSize().getWidth().toString() + 
 		        		  "x" + creative.getSize().getHeight().toString();
 		          creativeSizes.put(creativeID, creativeSize);
@@ -231,7 +241,7 @@ public class LineItemMethods {
 			Map<String, List<String>> lineItemSizes, Map<String, List<String>> sourceLICAs, 
 			Map<String, String> creativeSizes) throws Exception {
 		
-		
+		//Make list of LICA items to be passed into system for creation
 	    List<LineItemCreativeAssociation> potentialLICAs = new ArrayList<LineItemCreativeAssociation>();
 		ArrayList<String> updatedLineItems = new ArrayList<String>();
 		ArrayList<String> failedLICAs = new ArrayList<String>();
@@ -241,6 +251,10 @@ public class LineItemMethods {
 			String newLID = pair.get(1).toString();
 			List<String> availableCreatives = sourceLICAs.get(oldLID);
 			List<String> adSlotSizes = lineItemSizes.get(newLID);
+			//for each creative in the oldLICA, confirm that size matches
+			//an available ad slot size in the newLID.
+			//If it does, make a LICA. If not, add to list failedLICAs 
+			//to be returned to user for inspection.
 			for (String creative: availableCreatives){
 				String creativeSize = creativeSizes.get(creative);
 				boolean sizesMatch = adSlotSizes.contains(creativeSize);
@@ -277,11 +291,11 @@ public class LineItemMethods {
 	        dfpServices.get(session, LineItemCreativeAssociationServiceInterface.class);
 
 
-	    // Create the line item creative association on the server.
+	    // Create the LICAs
 	    LineItemCreativeAssociation[] licas =
 	        licaService.createLineItemCreativeAssociations(newLICAs);
 	    
-
+	    //need to pass LIDs with newLICAs to method activateLineItems
 	    for (LineItemCreativeAssociation createdLica : licas) {
 	    	String updatedLineItem = createdLica.getLineItemId().toString();
 	      updatedLineItems.add(updatedLineItem);
@@ -312,7 +326,8 @@ public class LineItemMethods {
 	    LineItemServiceInterface lineItemService =
 	        dfpServices.get(session, LineItemServiceInterface.class);
 
-	    // Create a statement to select a line item.
+	    // Create a statement to select line items from list that are inactive
+	    //or paused.
 	    StatementBuilder inactiveLineItemStatement = new StatementBuilder()
 	        .where("status = :status AND id IN " + LIDQuery)
 	        .orderBy("id ASC")
@@ -323,7 +338,8 @@ public class LineItemMethods {
 
 	    // Default for total result set size.
 	    int totalResultSetSize = 0;
-
+	    
+	    //Returns line items that are inactive. No changes made in DFP.
 	    do {
 	    	try {
 		      // Get line items by statement.
@@ -352,7 +368,7 @@ public class LineItemMethods {
 	      
 	      
 	      try{
-	      // Perform action.
+	      // Activates those line items.
 	      UpdateResult activateResult =
 	          lineItemService.performLineItemAction(activateAction, inactiveLineItemStatement.toStatement());
 	      if (activateResult != null && activateResult.getNumChanges() > 0) {
@@ -375,7 +391,7 @@ public class LineItemMethods {
 	        .limit(StatementBuilder.SUGGESTED_PAGE_LIMIT)
 	        .withBindVariableValue("status", "PAUSED");
 	  do {  
-	 // Get paused line items by statement.
+	 // Gets line items that need to be resumed. No changes in DFP
 	      LineItemPage pausedPage = lineItemService.getLineItemsByStatement(pausedLineItemStatement.toStatement());
 
 	      if (pausedPage.getResults() != null) {
@@ -403,7 +419,7 @@ public class LineItemMethods {
 	      com.google.api.ads.dfp.axis.v201702.ResumeLineItems resumeAction =
 	          new com.google.api.ads.dfp.axis.v201702.ResumeLineItems();
 	      
-	      
+	      //Resumes those paused line items
 	      try{
 	      // Perform action.
 	      UpdateResult result =
@@ -423,21 +439,19 @@ public class LineItemMethods {
 	
 	
 	public static void main(String[] args) throws Exception {
-		// Generate a refreshable OAuth2 credential.
+		// Create DFP connection instances.
 		Credential oAuth2Credential = new OfflineCredentials.Builder()
 				.forApi(Api.DFP)
 				.fromFile()
 				.build()
 				.generateCredential();
-
-		// Construct a DfpSession.
 		DfpSession session = new DfpSession.Builder()
 				.fromFile()
 				.withOAuth2Credential(oAuth2Credential)
 				.build();
-
 		DfpServices dfpServices = new DfpServices();
-
+		
+		// Some tests for the methods above
 		String LIDs = "(203061989, 291667469)";
 
 		Map<String, List<String>> lineSizes = getLineSizes(
