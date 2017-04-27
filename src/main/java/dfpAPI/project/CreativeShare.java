@@ -28,12 +28,12 @@ public class CreativeShare {
 	public static void main(String[] args) throws Exception {
 		ArrayList<String> oldLIDs = new ArrayList<String>();
 		ArrayList<String> newLIDs = new ArrayList<String>();
-		String workbookPath = "C:\\Users\\mthompson\\Downloads\\CreativeShare_sourceSheet.xls";
-		//return LID Sets from spreadsheet, 
-		//Then make list of source LIDs (to retrieve the source LICAs)
-		//And list of target LIDs (to check sizes against creative sizes)
+		String workbookPath = "C:\\dvStuff\\CreativeShare_sourceSheet.xls";
+		// return LID Sets from spreadsheet,
+		// Then make list of source LIDs (to retrieve the source LICAs)
+		// And list of target LIDs (to check sizes against creative sizes)
 		ArrayList<ArrayList> LIDSets = Spreadsheet.readXLSFileForLIDPairs(workbookPath);
-		for(ArrayList LIDSet: LIDSets) {
+		for (ArrayList LIDSet : LIDSets) {
 			if (LIDSet.size() == 2) {
 				String oldLID = LIDSet.get(0).toString();
 				String newLID = LIDSet.get(1).toString();
@@ -41,58 +41,55 @@ public class CreativeShare {
 				newLIDs.add(newLID);
 			}
 		}
-		//TODO: add DFP credential, session and services to DFPMethods
-		//TODO: and begin CreativeShare by creating an instance of DFPMethods.
-		//TODO: You will no longer need DFP stuff as arguments in methods
-		
-		//Required DFP objects
+		// TODO: add DFP credential, session and services to DFPMethods
+		// TODO: and begin CreativeShare by creating an instance of DFPMethods.
+		// TODO: You will no longer need DFP stuff as arguments in methods
+
+		// Required DFP objects
 		// Generate a refreshable OAuth2 credential.
 		Credential oAuth2Credential = new OfflineCredentials.Builder()
 				.forApi(Api.DFP)
 				.fromFile()
-				.build()		
+				.build()
 				.generateCredential();
 		// Construct a DfpSession.
-		DfpSession session = new DfpSession.Builder().fromFile()
-				.withOAuth2Credential(oAuth2Credential).build();
+		DfpSession session = new DfpSession.Builder()
+				.fromFile()
+				.withOAuth2Credential(oAuth2Credential)
+				.build();
 		DfpServices dfpServices = new DfpServices();
-		
-		
-		//DFP Query in getLineSizes requires LIDs as a string
+
+		// DFP Query in getLineSizes requires LIDs as a string
 		String newLIDString = newLIDs.toString();
 		Map<String, List<String>> newLineItemSizes = LineItemMethods.getLineSizes(
 				dfpServices, session, newLIDString);
-		
-		//DFP Query in getLICAs requires LIDs as string to work
+
+		// DFP Query in getLICAs requires LIDs as string to work
 		String oldLIDString = oldLIDs.toString();
 		Map<String, List<String>> oldLICAs = LineItemMethods.getLICAs(
 				dfpServices, session, oldLIDString);
 		ArrayList<String> creativesList = new ArrayList<String>();
-		for(String LID: oldLIDs) {
+		for (String LID : oldLIDs) {
 			if (oldLICAs.containsKey(LID)) {
 				List<String> creatives = oldLICAs.get(LID);
-				for(String id: creatives) {
+				for (String id : creatives) {
 					creativesList.add(id);
 				}
 			}
 		}
-		
+
 		String creativeIDString = creativesList.toString();
 		Map<String, String> creativeSizes = LineItemMethods.getCreativeSizes(
 				dfpServices, session, creativeIDString);
-		
-		
+
 		HashSet<String> traffickedLIDs = LineItemMethods.createLICAs(
 				dfpServices, session, LIDSets, newLineItemSizes, oldLICAs, creativeSizes);
-		
-		//Any Line Items that were paused prior to trafficking or that
-		//do not have creative for each size ad slot will need to be activated.
+
+		// Any Line Items that were paused prior to trafficking or that
+		// do not have creative for each size ad slot will need to be activated.
 		String traffickedLIDsString = traffickedLIDs.toString();
 		LineItemMethods.activateLineItems(dfpServices, session, traffickedLIDsString);
-		
-			
+
 	}
 
 }
-
-

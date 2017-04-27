@@ -1,6 +1,5 @@
 package dfpAPI.project;
 
-
 import java.util.ArrayList;
 
 import com.google.api.ads.common.lib.auth.OfflineCredentials;
@@ -13,7 +12,6 @@ import dfpAPI.project.Spreadsheet;
 
 import com.google.api.ads.dfp.axis.factory.DfpServices;
 
-
 public class ZombieScript {
 
 	public static void main(String[] args) throws Exception {
@@ -21,7 +19,6 @@ public class ZombieScript {
 		String filepath = "C:\\dvStuff\\ZombieScriptSource.xls";
 		ArrayList<Integer> LIDs = Spreadsheet.readXLSFile(filepath);
 		String LIDString = (String) LIDs.toString();
-
 
 		Credential oAuth2Credential = new OfflineCredentials.Builder()
 				.forApi(Api.DFP)
@@ -34,7 +31,8 @@ public class ZombieScript {
 				.build();
 		DfpServices dfpServices = new DfpServices();
 
-		ArrayList<ArrayList> lineInfo = LineItemMethods.returnLineInfo(dfpServices, session, LIDString);
+		ArrayList<ArrayList> lineInfo = LineItemMethods.returnLineInfo(
+				dfpServices, session, LIDString);
 		Spreadsheet.writeXLSFile(lineInfo);
 	}
 

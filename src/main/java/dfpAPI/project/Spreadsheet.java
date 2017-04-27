@@ -1,8 +1,11 @@
 /* All of the spreadsheet methods used for ZombieScript and CreativeShare
  * Currently only supports .xls files. Will add support for .xlsx and .xlsm
  * in the future. 
- * Two read methods 1) readXLSFile and 2) readXLSFileForLIDPairs
+ * Two read methods 
+ * 		1) readXLSFile 
+ * 		2) readXLSFileForLIDPairs
  * 1 is for ZombieScript. 2 is for CreativeShare
+ * One write method. Write works with any ArrayList of ArrayLists.
  */
 package dfpAPI.project;
 
@@ -108,8 +111,8 @@ public class Spreadsheet {
 						default:
 							break;
 						}
-					}	
-						
+					}
+
 				default:
 					break;
 				}
@@ -141,7 +144,7 @@ public class Spreadsheet {
 				HSSFCell cell = row.createCell(c);
 
 				cell.setCellValue(line.get(c));
-			
+
 			}
 		}
 
@@ -154,16 +157,16 @@ public class Spreadsheet {
 	}
 
 	public static void main(String[] args) throws Exception {
-		
-		//for readXLSFile
+
+		// for readXLSFile
 		String zombieScriptSource = "C:\\dvStuff\\ZombieOrderLinesReport_04-10-2017_pt1.xls";
 		ArrayList<Integer> listOfLIDs = readXLSFile(zombieScriptSource);
-		
-		//for readXLSFileForLIDPairs
+
+		// for readXLSFileForLIDPairs
 		String workbookPath = "C:\\dvStuff\\testsource.xls";
 		ArrayList<ArrayList> LIDSets = readXLSFileForLIDPairs(workbookPath);
-		
-		//for writeXLSFile
+
+		// for writeXLSFile
 		writeXLSFile(LIDSets);
 	}
 }

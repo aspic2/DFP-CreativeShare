@@ -142,7 +142,7 @@ public class LineItemMethods {
 		        .orderBy("lineItemId ASC, creativeId ASC")
 		        .limit(StatementBuilder.SUGGESTED_PAGE_LIMIT);
 
-		    // Retrieve a small amount of line item creative associations at a time, paging through
+		    // Retrieve a small amount of LICAs at a time, paging through
 		    // until all line item creative associations have been retrieved.
 		    int totalResultSetSize = 0;
 		    Map<String, List<String>> LICAList = new HashMap<String, List<String>>();
@@ -287,8 +287,8 @@ public class LineItemMethods {
 				new LineItemCreativeAssociation[potentialLICAs.size()]);
 		    
 		// Get the LineItemCreativeAssociationService.
-	    LineItemCreativeAssociationServiceInterface licaService =
-	        dfpServices.get(session, LineItemCreativeAssociationServiceInterface.class);
+	    LineItemCreativeAssociationServiceInterface licaService = dfpServices.get(
+	        		session, LineItemCreativeAssociationServiceInterface.class);
 
 
 	    // Create the LICAs
@@ -343,7 +343,8 @@ public class LineItemMethods {
 	    do {
 	    	try {
 		      // Get line items by statement.
-		      LineItemPage page = lineItemService.getLineItemsByStatement(inactiveLineItemStatement.toStatement());
+		      LineItemPage page = lineItemService.getLineItemsByStatement(
+		    		  inactiveLineItemStatement.toStatement());
 	
 		      if (page.getResults() != null) {
 		        totalResultSetSize = page.getTotalResultSetSize();
@@ -370,9 +371,11 @@ public class LineItemMethods {
 	      try{
 	      // Activates those line items.
 	      UpdateResult activateResult =
-	          lineItemService.performLineItemAction(activateAction, inactiveLineItemStatement.toStatement());
+	          lineItemService.performLineItemAction(activateAction,
+	        		  inactiveLineItemStatement.toStatement());
 	      if (activateResult != null && activateResult.getNumChanges() > 0) {
-		        System.out.printf("Number of inactive line items activated: %d%n", activateResult.getNumChanges());
+		        System.out.printf("Number of inactive line items activated: %d%n",
+		        		activateResult.getNumChanges());
 		      } else {
 		        System.out.println("No inactive line items were activated.");
 		      }
@@ -392,7 +395,8 @@ public class LineItemMethods {
 	        .withBindVariableValue("status", "PAUSED");
 	  do {  
 	 // Gets line items that need to be resumed. No changes in DFP
-	      LineItemPage pausedPage = lineItemService.getLineItemsByStatement(pausedLineItemStatement.toStatement());
+	      LineItemPage pausedPage = lineItemService.getLineItemsByStatement(
+	    		  pausedLineItemStatement.toStatement());
 
 	      if (pausedPage.getResults() != null) {
 	        pausedTotalResultSetSize = pausedPage.getTotalResultSetSize();
@@ -407,7 +411,8 @@ public class LineItemMethods {
     pausedLineItemStatement.increaseOffsetBy(StatementBuilder.SUGGESTED_PAGE_LIMIT);
 	  } while (pausedLineItemStatement.getOffset() < pausedTotalResultSetSize);
 
-  System.out.printf("Number of line items to be resumed: %d%n", pausedTotalResultSetSize);
+  System.out.printf("Number of line items to be resumed: %d%n",
+		  pausedTotalResultSetSize);
 
   if (pausedTotalResultSetSize > 0) {
     // Remove limit and offset from statement.
@@ -423,9 +428,11 @@ public class LineItemMethods {
 	      try{
 	      // Perform action.
 	      UpdateResult result =
-	          lineItemService.performLineItemAction(resumeAction, pausedLineItemStatement.toStatement());
+	          lineItemService.performLineItemAction(
+	        		  resumeAction, pausedLineItemStatement.toStatement());
 	      if (result != null && result.getNumChanges() > 0) {
-		        System.out.printf("Number of paused line items resumed: %d%n", result.getNumChanges());
+		        System.out.printf("Number of paused line items resumed: %d%n",
+		        		result.getNumChanges());
 		      } else {
 		        System.out.println("No paused line items were resumed.");
 		      }
@@ -469,7 +476,6 @@ public class LineItemMethods {
 		
 		//HashSet<String> successfulLinesTrafficked = createLICAs(dfpServices, session, LIDPairs,
 		//		lineItemSizes, sourceLICAs, creativeSizes);
-		
 		
 		
 		String activateLines = "(321876629, 321876269)";
