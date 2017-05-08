@@ -27,7 +27,7 @@ import com.google.api.ads.dfp.axis.v201702.UpdateResult;
 import com.google.api.ads.dfp.lib.client.DfpSession;
 import com.google.api.client.auth.oauth2.Credential;
 
-public class LineItemMethods {
+public class DFPMethods {
 
 	public static ArrayList<ArrayList> returnLineInfo(
 			DfpServices dfpServices, DfpSession session, String LIDs) throws Exception {

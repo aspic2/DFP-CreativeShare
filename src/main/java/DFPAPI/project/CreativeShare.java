@@ -15,7 +15,7 @@ import com.google.api.ads.common.lib.exception.ValidationException;
 import com.google.api.ads.dfp.lib.client.DfpSession;
 import com.google.api.client.auth.oauth2.Credential;
 
-import dfpAPI.project.LineItemMethods;
+import dfpAPI.project.DFPMethods;
 import dfpAPI.project.Spreadsheet;
 
 import com.google.api.ads.dfp.axis.factory.DfpServices;
@@ -54,12 +54,12 @@ public class CreativeShare {
 		
 		//DFP Query requires LIDs as string to work
 		String newLIDString = newLIDs.toString();
-		Map<String, List<String>> newLineItemSizes = LineItemMethods.getLineSizes(
+		Map<String, List<String>> newLineItemSizes = DFPMethods.getLineSizes(
 				dfpServices, session, newLIDString);
 		
 		//DFP Query requires LIDs as string to work
 		String oldLIDString = oldLIDs.toString();
-		Map<String, List<String>> oldLICAs = LineItemMethods.getLICAs(
+		Map<String, List<String>> oldLICAs = DFPMethods.getLICAs(
 				dfpServices, session, oldLIDString);
 		ArrayList<String> creativesList = new ArrayList<String>();
 		for(String LID: oldLIDs) {
@@ -72,7 +72,7 @@ public class CreativeShare {
 		}
 		
 		String creativeIDString = creativesList.toString();
-		Map<String, String> creativeSizes = LineItemMethods.getCreativeSizes(
+		Map<String, String> creativeSizes = DFPMethods.getCreativeSizes(
 				dfpServices, session, creativeIDString);
 		
 		/*System.out.println(creativesList);
@@ -83,7 +83,7 @@ public class CreativeShare {
 		System.out.println();
 		*/
 		
-		HashSet<String> traffickedLIDs = LineItemMethods.createLICAs(
+		HashSet<String> traffickedLIDs = DFPMethods.createLICAs(
 				dfpServices, session, LIDSets, newLineItemSizes, oldLICAs, creativeSizes);
 		
 		/*System.out.println("Here are your trafficked Line Items:");
@@ -96,7 +96,7 @@ public class CreativeShare {
 		}
 		*/
 		String traffickedLIDsString = traffickedLIDs.toString();
-		LineItemMethods.activateLineItems(dfpServices, session, traffickedLIDsString);
+		DFPMethods.activateLineItems(dfpServices, session, traffickedLIDsString);
 		
 			
 	}

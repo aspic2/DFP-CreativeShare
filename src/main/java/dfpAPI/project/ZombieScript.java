@@ -8,7 +8,7 @@ import com.google.api.ads.common.lib.auth.OfflineCredentials.Api;
 import com.google.api.ads.dfp.lib.client.DfpSession;
 import com.google.api.client.auth.oauth2.Credential;
 
-import dfpAPI.project.LineItemMethods;
+import dfpAPI.project.DFPMethods;
 import dfpAPI.project.Spreadsheet;
 
 import com.google.api.ads.dfp.axis.factory.DfpServices;
@@ -29,7 +29,7 @@ public class ZombieScript {
 
 		DfpServices dfpServices = new DfpServices();
 
-		ArrayList<ArrayList> lineInfo = LineItemMethods.returnLineInfo(dfpServices, session, LIDString);
+		ArrayList<ArrayList> lineInfo = DFPMethods.returnLineInfo(dfpServices, session, LIDString);
 		Spreadsheet.writeXLSFile(lineInfo);
 	}
 
