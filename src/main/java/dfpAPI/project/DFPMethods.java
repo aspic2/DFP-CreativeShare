@@ -29,7 +29,7 @@ import com.google.api.client.auth.oauth2.Credential;
 
 public class DFPMethods {
 
-	public static ArrayList<ArrayList> returnLineInfo(
+	public static List<List> returnLineInfo(
 			DfpServices dfpServices, DfpSession session, String LIDs) throws Exception {
 
 		String LIDQuery = LIDs.replace("]", ")").replace("[", "(");
@@ -45,7 +45,7 @@ public class DFPMethods {
 		// Default for total result set size.
 		int totalResultSetSize = 0;
 		// ArrayList<String[]> LineInfo = new ArrayList<String[]>();
-		ArrayList<ArrayList> dfpData = new ArrayList<ArrayList>();
+		List<List> dfpData = new ArrayList<List>();
 
 		do {
 			// Get line items by statement.
@@ -62,7 +62,7 @@ public class DFPMethods {
 					// boolean isMissingCreatives =
 					// lineItem.getIsMissingCreatives();
 					// String[] token = new String[3];
-					ArrayList<String> token = new ArrayList<String>();
+					List<String> token = new ArrayList<String>();
 					// token[0] = (id);
 					// token[1] = name;
 					// token[2] = status;
@@ -242,16 +242,16 @@ public class DFPMethods {
 	
 	
 	public static HashSet<String> createLICAs(
-			DfpServices dfpServices, DfpSession session, ArrayList<ArrayList> LIDPairs,
+			DfpServices dfpServices, DfpSession session, List<List> LIDPairs,
 			Map<String, List<String>> lineItemSizes, Map<String, List<String>> sourceLICAs, 
 			Map<String, String> creativeSizes) throws Exception {
 		
 		
 	    List<LineItemCreativeAssociation> potentialLICAs = new ArrayList<LineItemCreativeAssociation>();
-		ArrayList<String> updatedLineItems = new ArrayList<String>();
-		ArrayList<String> failedLICAs = new ArrayList<String>();
+		List<String> updatedLineItems = new ArrayList<String>();
+		List<String> failedLICAs = new ArrayList<String>();
 		
-		for (ArrayList pair: LIDPairs){
+		for (List pair: LIDPairs){
 			String oldLID = pair.get(0).toString();
 			String newLID = pair.get(1).toString();
 			List<String> availableCreatives = sourceLICAs.get(oldLID);

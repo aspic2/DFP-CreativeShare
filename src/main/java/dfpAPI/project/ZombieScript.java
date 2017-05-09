@@ -2,6 +2,7 @@ package dfpAPI.project;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.api.ads.common.lib.auth.OfflineCredentials;
 import com.google.api.ads.common.lib.auth.OfflineCredentials.Api;
@@ -29,7 +30,7 @@ public class ZombieScript {
 
 		DfpServices dfpServices = new DfpServices();
 
-		ArrayList<ArrayList> lineInfo = DFPMethods.returnLineInfo(dfpServices, session, LIDString);
+		List<List> lineInfo = DFPMethods.returnLineInfo(dfpServices, session, LIDString);
 		Spreadsheet.writeXLSFile(lineInfo);
 	}
 

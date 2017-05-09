@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -65,14 +66,14 @@ public class Spreadsheet {
 		return values;
 	}
 
-	public static ArrayList<ArrayList> readXLSFileForLIDPairs(String filepath) throws IOException {
+	public static List<List> readXLSFileForLIDPairs(String filepath) throws IOException {
 		InputStream ExcelFileToRead = new FileInputStream(filepath);
 		HSSFWorkbook wb = new HSSFWorkbook(ExcelFileToRead);
 
 		HSSFSheet sheet = wb.getSheetAt(0);
 		HSSFRow row;
 		HSSFCell cell;
-		ArrayList<ArrayList> sets = new ArrayList<ArrayList>();
+		List<List> sets = new ArrayList<List>();
 
 		Iterator<Row> rows = sheet.rowIterator();
 
@@ -112,7 +113,7 @@ public class Spreadsheet {
 		return sets;
 	}
 
-	public static void writeXLSFile(ArrayList<ArrayList> sourceList) throws IOException {
+	public static void writeXLSFile(List<List> sourceList) throws IOException {
 
 		// name of excel file
 		String excelFileName = "C:\\Users\\mthompson\\Downloads\\ZRResults_04-17-2017_pt1.xls";
@@ -126,7 +127,7 @@ public class Spreadsheet {
 		// iterating r number of rows
 		for (int r = 0; r < sourceList.size(); r++) {
 			HSSFRow row = sheet.createRow(r);
-			ArrayList<String> line = sourceList.get(r);
+			List<String> line = sourceList.get(r);
 
 			// iterating c number of columns
 			
@@ -150,6 +151,6 @@ public class Spreadsheet {
 	public static void main(String[] args) throws Exception {
 		String workbookPath = "C:\\Users\\mthompson\\Downloads\\testsource.xls";
 		
-		ArrayList<ArrayList> LIDSets = readXLSFileForLIDPairs(workbookPath);
+		List<List> LIDSets = readXLSFileForLIDPairs(workbookPath);
 	}
 }

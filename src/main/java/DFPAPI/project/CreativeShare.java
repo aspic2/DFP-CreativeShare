@@ -26,12 +26,12 @@ import com.google.api.ads.dfp.axis.v201702.LineItemCreativeAssociationServiceInt
 
 public class CreativeShare {
 	public static void main(String[] args) throws Exception {
-		ArrayList<String> oldLIDs = new ArrayList<String>();
-		ArrayList<String> newLIDs = new ArrayList<String>();
+		List<String> oldLIDs = new ArrayList<String>();
+		List<String> newLIDs = new ArrayList<String>();
 		String workbookPath = "C:\\Users\\mthompson\\Downloads\\CreativeShare_sourceSheet.xls";
 		//return LID Sets from spreadsheet
-		ArrayList<ArrayList> LIDSets = Spreadsheet.readXLSFileForLIDPairs(workbookPath);
-		for(ArrayList LIDSet: LIDSets) {
+		List<List> LIDSets = Spreadsheet.readXLSFileForLIDPairs(workbookPath);
+		for(List LIDSet: LIDSets) {
 			if (LIDSet.size() == 2) {
 				String oldLID = LIDSet.get(0).toString();
 				String newLID = LIDSet.get(1).toString();
@@ -61,7 +61,7 @@ public class CreativeShare {
 		String oldLIDString = oldLIDs.toString();
 		Map<String, List<String>> oldLICAs = DFPMethods.getLICAs(
 				dfpServices, session, oldLIDString);
-		ArrayList<String> creativesList = new ArrayList<String>();
+		List<String> creativesList = new ArrayList<String>();
 		for(String LID: oldLIDs) {
 			if (oldLICAs.containsKey(LID)) {
 				List<String> creatives = oldLICAs.get(LID);
