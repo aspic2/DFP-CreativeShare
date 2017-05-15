@@ -20,3 +20,4 @@ target/
 .settings
 *.class
 .metadata/
+Servers/
