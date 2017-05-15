@@ -19,3 +19,4 @@ target/
 .classpath
 .settings
 *.class
+.metadata/

@@ -1,6 +1,7 @@
 package dfpAPI.project;
 
 import java.lang.reflect.Array;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import com.google.api.ads.dfp.axis.v201702.ApiException;
 import com.google.api.ads.dfp.axis.v201702.Creative;
 import com.google.api.ads.dfp.axis.v201702.CreativePage;
 import com.google.api.ads.dfp.axis.v201702.CreativeServiceInterface;
@@ -28,6 +30,50 @@ import com.google.api.ads.dfp.lib.client.DfpSession;
 import com.google.api.client.auth.oauth2.Credential;
 
 public class DFPMethods {
+	
+	public static Map<String, String> mapLIDs(
+			DfpServices dfpServices, DfpSession session, String LIDQuery) throws ApiException, RemoteException {
+		
+		
+		Map<String, String> PLIDMap = new HashMap();
+		
+		// Get the LineItemService.
+		LineItemServiceInterface lineItemService = dfpServices
+				.get(session, LineItemServiceInterface.class);
+
+		// Create a statement to select all line items.
+		StatementBuilder statementBuilder = new StatementBuilder()
+				.where(LIDQuery).orderBy("id ASC")
+				.limit(StatementBuilder.SUGGESTED_PAGE_LIMIT);
+
+		// Default for total result set size.
+		int totalResultSetSize = 0;
+		// ArrayList<String[]> LineInfo = new ArrayList<String[]>();
+		List<List> dfpData = new ArrayList<List>();
+
+		do {
+			// Get line items by statement.
+			LineItemPage page = lineItemService
+					.getLineItemsByStatement(statementBuilder.toStatement());
+
+			if (page.getResults() != null) {
+				totalResultSetSize = page.getTotalResultSetSize();
+				int i = page.getStartIndex();
+				for (LineItem lineItem : page.getResults()) {
+					// get just the PLID from the beginning of the name
+					String name = lineItem.getName().substring(0, 6);
+					String id = lineItem.getId().toString();
+					PLIDMap.put(name, id);
+					//System.out.println(name + ": " + id);
+				}
+			}
+		
+			statementBuilder.increaseOffsetBy(StatementBuilder.SUGGESTED_PAGE_LIMIT);
+		} while (statementBuilder.getOffset() < totalResultSetSize);
+		System.out.printf("Number of results found: %d%n", totalResultSetSize);
+		
+		return PLIDMap;
+	}
 
 	public static List<List> returnLineInfo(
 			DfpServices dfpServices, DfpSession session, String LIDs) throws Exception {
@@ -312,6 +358,9 @@ public class DFPMethods {
 	    	System.out.println(LICA);
 	    	}
 	    }
+	    System.out.println();
+	    System.out.println("<end of failed LICAs>");
+	    System.out.println();
 	    
 	    HashSet<String> setOfUpdatedLineItems = new HashSet<String>(updatedLineItems);
 
