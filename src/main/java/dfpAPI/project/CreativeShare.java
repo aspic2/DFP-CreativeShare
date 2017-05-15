@@ -54,11 +54,7 @@ public class CreativeShare {
 			formatPLIDs.add("name LIKE '" + plid + wildcard + "'");
 			
 		}
-		
 		dfpQuery = formatPLIDs.toString().replace("]", "").replace("[", "").replace(",", " OR");
-		
-		System.out.println(dfpQuery);
-		
 		
 		return dfpQuery;
 		
@@ -67,8 +63,6 @@ public class CreativeShare {
 
 	
 	public static List<List> getLIDPairs(List<List> plidPairs, Map<String, String> plidMap) {
-		System.out.println("Getting the LID pairs now...");
-		System.out.println();
 		List<List> lidPairs = new ArrayList<List>();
 		for(List pairs: plidPairs){
 			boolean foundLID;
@@ -91,7 +85,6 @@ public class CreativeShare {
 				lidPair.add(sourceLID);
 				lidPair.add(targetLID);
 				lidPairs.add(lidPair);
-				System.out.println(sourceLID + " -> " + targetLID);
 			} else {
 				//TODO: add failed PLID to list of Failed PLIDs, with explanation
 				continue;
@@ -103,7 +96,7 @@ public class CreativeShare {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		String workbookPath;
+		String workbookPath = "C:\\Users\\mthompson\\Downloads\\newCreativeShare.xls";
 		List<List> plidPairs;
 		List<String> allPLIDs;
 		String lidQuery;
@@ -112,8 +105,6 @@ public class CreativeShare {
 		List<String> oldLIDs = new ArrayList<String>();
 		List<String> newLIDs = new ArrayList<String>();
 		
-		
-		workbookPath = "C:\\Users\\mthompson\\Downloads\\testNewCreativeShare.xls";
 		//return LID Sets from spreadsheet
 		plidPairs = Spreadsheet.readXLSFileForLIDPairs(workbookPath);
 		allPLIDs = getPLIDList(plidPairs);

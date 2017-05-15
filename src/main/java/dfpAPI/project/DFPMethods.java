@@ -70,7 +70,7 @@ public class DFPMethods {
 		
 			statementBuilder.increaseOffsetBy(StatementBuilder.SUGGESTED_PAGE_LIMIT);
 		} while (statementBuilder.getOffset() < totalResultSetSize);
-		System.out.printf("Number of results found: %d%n", totalResultSetSize);
+		System.out.printf("PLIDMap--Number of results found: %d%n", totalResultSetSize);
 		
 		return PLIDMap;
 	}
@@ -127,7 +127,7 @@ public class DFPMethods {
 
 			statementBuilder.increaseOffsetBy(StatementBuilder.SUGGESTED_PAGE_LIMIT);
 		} while (statementBuilder.getOffset() < totalResultSetSize);
-		System.out.printf("Number of results found: %d%n", totalResultSetSize);
+		System.out.printf("returnLineInfo--Number of results found: %d%n", totalResultSetSize);
 		return dfpData;
 	}
 	
@@ -395,7 +395,7 @@ public class DFPMethods {
 	
 		      if (page.getResults() != null) {
 		        totalResultSetSize = page.getTotalResultSetSize();
-		        int i = page.getStartIndex();
+		        int i = page.getStartIndex() + 1;
 		        for (LineItem lineItem : page.getResults()) {
 		          System.out.printf(
 		              "%d) Line item with ID %d will be activated.%n", i++, lineItem.getId());
