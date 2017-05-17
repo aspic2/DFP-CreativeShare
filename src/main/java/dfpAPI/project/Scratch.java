@@ -23,7 +23,14 @@ import com.google.api.ads.dfp.axis.v201702.LineItemServiceInterface;
 import com.google.api.ads.dfp.lib.client.DfpSession;
 import com.google.api.client.auth.oauth2.Credential;
 
+/**Use this class to test out new ideas and to write one-off programs 
+ * without having to create new Java projects. 
+ * 
+ * @author mthompson
+ *
+ */
 public class Scratch {
+	
 	
 	public static List<String> returnPLIDList() {
 		List<String> PLIDs = new ArrayList<String>();

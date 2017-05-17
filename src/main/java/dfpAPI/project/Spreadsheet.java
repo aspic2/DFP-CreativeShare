@@ -32,11 +32,19 @@ import com.google.api.ads.dfp.lib.client.DfpSession;
 import com.google.api.client.auth.oauth2.Credential;
 
 public class Spreadsheet {
-
-	public static ArrayList<Integer> readXLSFile() throws IOException {
-		InputStream ExcelFileToRead = new FileInputStream(
-				"C:\\Users\\mthompson\\Downloads\\ZombieOrderLinesReport_04-10-2017_pt1.xls");
-		HSSFWorkbook wb = new HSSFWorkbook(ExcelFileToRead);
+	
+	
+	/** Reads one column of an excel file. 
+	 * Specify which column you want to read in the HSSFCell variable 'contents'.
+	 * 
+	 * Currently reads only .xls files. No .xlsx or .xlsm files.
+	 * 
+	 * @param sourceExcelFile
+	 * @return values
+	 */
+	public static ArrayList<Integer> readXLSFile(InputStream sourceExcelFile) throws IOException {
+		
+		HSSFWorkbook wb = new HSSFWorkbook(sourceExcelFile);
 
 		HSSFSheet sheet = wb.getSheetAt(0);
 		HSSFRow row;
@@ -52,6 +60,12 @@ public class Spreadsheet {
 			HSSFCell contents = row.getCell(4);
 			if (contents != null) {
 				int value;
+				
+				/* add additional cases to handle different types of cell values
+				 * default is done if none of the case criteria are met.
+				 * NOTE: it would be wise to add or update a case to show
+				 * all rows that are skipped.
+				 */
 				switch (contents.getCellTypeEnum()) {
 
 				case NUMERIC:
@@ -65,7 +79,23 @@ public class Spreadsheet {
 		}
 		return values;
 	}
-
+	
+	
+	/** Separate read method that reads two columns of an excel doc and pairs
+	 * them together as lists. Specify columns to read in the HSSFCell variables.
+	 * Returns a list of Lists with each item read from the 
+	 * Excel doc. 
+	 * 
+	 * Currently only reads .xls files.
+	 * 
+	 * Currently only reads numerical values from Excel. It will skip any row
+	 * where both columns do not contain numerical values.
+	 * Method does not alert you to skipped rows.
+	 * 
+	 * @param filepath
+	 * @return sets
+	 * @throws IOException
+	 */
 	public static List<List> readXLSFileForLIDPairs(String filepath) throws IOException {
 		InputStream ExcelFileToRead = new FileInputStream(filepath);
 		HSSFWorkbook wb = new HSSFWorkbook(ExcelFileToRead);
@@ -74,7 +104,7 @@ public class Spreadsheet {
 		HSSFRow row;
 		HSSFCell cell;
 		List<List> sets = new ArrayList<List>();
-
+		
 		Iterator<Row> rows = sheet.rowIterator();
 
 		while (rows.hasNext()) {
@@ -86,6 +116,11 @@ public class Spreadsheet {
 			if (cellA != null) {
 				int cellAValue;
 				int cellCValue;
+				/* add additional cases to handle different types of cell values
+				 * default is done if none of the case criteria are met.
+				 * NOTE: it would be wise to add or update a case to show
+				 * all rows that are skipped.
+				 */
 				switch (cellA.getCellTypeEnum()) {
 
 				case NUMERIC:
@@ -113,10 +148,16 @@ public class Spreadsheet {
 		return sets;
 	}
 
-	public static void writeXLSFile(List<List> sourceList) throws IOException {
+	/** Method accepts a List of Lists of items to write to an excel file.
+	 * Pass in your list and the path where you want to write your new file
+	 * (with the file name and extension) as arguments. 
+	 * 
+	 * @param sourceList
+	 * @param targetFile
+	 * @throws IOException
+	 */
+	public static void writeXLSFile(List<List> sourceList, String targetFile) throws IOException {
 
-		// name of excel file
-		String excelFileName = "C:\\Users\\mthompson\\Downloads\\ZRResults_04-17-2017_pt1.xls";
 
 		// name of sheet
 		String sheetName = "Zombie Report";
@@ -140,7 +181,7 @@ public class Spreadsheet {
 			}
 		}
 
-		FileOutputStream fileOut = new FileOutputStream(excelFileName);
+		FileOutputStream fileOut = new FileOutputStream(targetFile);
 
 		// write this workbook to an Outputstream.
 		wb.write(fileOut);

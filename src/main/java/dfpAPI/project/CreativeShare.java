@@ -32,6 +32,13 @@ import com.google.api.ads.dfp.axis.v201702.LineItemServiceInterface;
 
 public class CreativeShare {
 	
+	/** method takes the pairs of PLIDs and turns them into one long list
+	 * DFP queries cannot read pairs, so to pass this info into DFP, it must
+	 * be make into a list of strings.
+	 * 
+	 * @param pairs
+	 * @return
+	 */
 	public static List<String> getPLIDList(List<List> pairs) {
 		List<String> plidList = new ArrayList<String>();
 		for(List<Integer> pair: pairs){
@@ -44,16 +51,28 @@ public class CreativeShare {
 		
 	}
 	
+	
+	/** Formats a list of PLIDs to be read in DFPMethods.getLIDs. 
+	 * The idiosyncrasies of the method are explained below.
+	 * 
+	 * @param plids
+	 * @return dfpQuery
+	 */
 	public static String queryBuilder(List<String> plids){
 		String dfpQuery;
 		List<String> formatPLIDs = new ArrayList<String>();
+		// "-1 retrieves only natl_ line items
 		String wildcard = "-1%";
 		int length = plids.size();
 		for (String plid : plids){
+			// compensate for zero indexing
 			int endIndex = plid.length() - 1;
+			// creates a list of "name LIKE '555555-1%'" values
 			formatPLIDs.add("name LIKE '" + plid + wildcard + "'");
 			
 		}
+		// converts separators in list from ',' to 'OR', yielding:
+		// "name LIKE 555555-1% OR name LIKE 555556-1%" etc.
 		dfpQuery = formatPLIDs.toString().replace("]", "").replace("[", "").replace(",", " OR");
 		
 		return dfpQuery;
@@ -61,7 +80,13 @@ public class CreativeShare {
 	}
 	
 
-	
+	/** Looks up the associate LID for each PLID. Pairs up these LIDs just as 
+	 * the PLIDs are paired up. 
+	 * 
+	 * @param plidPairs
+	 * @param plidMap
+	 * @return lidPairs
+	 */
 	public static List<List> getLIDPairs(List<List> plidPairs, Map<String, String> plidMap) {
 		List<List> lidPairs = new ArrayList<List>();
 		for(List pairs: plidPairs){
@@ -95,7 +120,16 @@ public class CreativeShare {
 		return lidPairs;
 	}
 	
+	
+	
+	/** Update workbookPath to path for your document. Otherwise should be
+	 * smooth sailing.
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
+		
 		String workbookPath = "C:\\Users\\mthompson\\Downloads\\newCreativeShare.xls";
 		List<List> plidPairs;
 		List<String> allPLIDs;
@@ -105,12 +139,9 @@ public class CreativeShare {
 		List<String> oldLIDs = new ArrayList<String>();
 		List<String> newLIDs = new ArrayList<String>();
 		
-		//return LID Sets from spreadsheet
-		plidPairs = Spreadsheet.readXLSFileForLIDPairs(workbookPath);
-		allPLIDs = getPLIDList(plidPairs);
-		lidQuery = queryBuilder(allPLIDs);
-		
-		
+		/* Next three variables are just a bunch of required stuff to use the API
+		 * 
+		 */
 		// Generate a refreshable OAuth2 credential.
 		Credential oAuth2Credential = new OfflineCredentials.Builder()
 				.forApi(Api.DFP)
@@ -123,11 +154,26 @@ public class CreativeShare {
 		DfpServices dfpServices = new DfpServices();
 		
 		
+		/* These methods convert your PLID values from the spreadsheet into DFP LIDs,
+		 * which are much more efficient to use in the rest of the program.
+		 * If you ever want to change this to read LIDs directly,
+		 * revise variable LIDSets to read your spreadsheet and
+		 * disable all the methods before it (other than the required DFP ones).
+		 */
+		plidPairs = Spreadsheet.readXLSFileForLIDPairs(workbookPath);
+		allPLIDs = getPLIDList(plidPairs);
+		lidQuery = queryBuilder(allPLIDs);
+		
+
+		
+		
 		plidsToLIDs = DFPMethods.mapLIDs(dfpServices, session, lidQuery);
 		
 		LIDSets = getLIDPairs(plidPairs, plidsToLIDs);
 		
-		
+		/* Retrieve info to check that creative can be shared from source line
+		 * to target line
+		 */
 		for(List LIDSet: LIDSets) {
 			if (LIDSet.size() == 2) {
 				String oldLID = LIDSet.get(0).toString();
@@ -136,6 +182,7 @@ public class CreativeShare {
 				newLIDs.add(newLID);
 			}
 		}
+
 		
 		//DFP Query requires LIDs as string to work
 		String newLIDString = newLIDs.toString();
@@ -156,34 +203,23 @@ public class CreativeShare {
 			}
 		}
 		
+		
+		/* Prepare creative and target line, then create the new LICAs
+		 * 
+		 */
 		String creativeIDString = creativesList.toString();
 		Map<String, String> creativeSizes = DFPMethods.getCreativeSizes(
 				dfpServices, session, creativeIDString);
 		
-		/*System.out.println(creativesList);
-		System.out.println(creativeSizes);
-		System.out.println(oldLICAs);
-		System.out.println(newLineItemSizes);
-		System.out.println(newLIDs);
-		System.out.println();
-		*/
-		
 		HashSet<String> traffickedLIDs = DFPMethods.createLICAs(
 				dfpServices, session, LIDSets, newLineItemSizes, oldLICAs, creativeSizes);
 		
-		/*System.out.println("Here are your trafficked Line Items:");
-		int c = 0;
-		for (String LID : traffickedLIDs) {
-			c++;
-			System.out.print(c);
-			System.out.print(") ");
-			System.out.println(LID);	
-		}
-		*/
-		String traffickedLIDsString = traffickedLIDs.toString();
-		DFPMethods.activateLineItems(dfpServices, session, traffickedLIDsString);
 		
-			
+		/* activate or resume any line items that were just trafficked.
+		 * 
+		 */
+		String traffickedLIDsString = traffickedLIDs.toString();
+		DFPMethods.activateLineItems(dfpServices, session, traffickedLIDsString);		
 	}
 
 }

@@ -31,6 +31,15 @@ import com.google.api.client.auth.oauth2.Credential;
 
 public class DFPMethods {
 	
+	/** Creates a map/dictionary that allows you to look up the DFP ID of a line item
+	 * given its PLID
+	 * @param dfpServices
+	 * @param session
+	 * @param LIDQuery
+	 * @return
+	 * @throws ApiException
+	 * @throws RemoteException
+	 */
 	public static Map<String, String> mapLIDs(
 			DfpServices dfpServices, DfpSession session, String LIDQuery) throws ApiException, RemoteException {
 		
@@ -74,7 +83,18 @@ public class DFPMethods {
 		
 		return PLIDMap;
 	}
-
+	
+	/** Method with most logic for ZombieScript. Looks up line items in DFP 
+	 * using their LIDs.
+	 * You can specify the info you want to return from the line items from
+	 * within the method. See notes below.
+	 *  
+	 * @param dfpServices
+	 * @param session
+	 * @param LIDs
+	 * @return
+	 * @throws Exception
+	 */
 	public static List<List> returnLineInfo(
 			DfpServices dfpServices, DfpSession session, String LIDs) throws Exception {
 
@@ -90,7 +110,6 @@ public class DFPMethods {
 
 		// Default for total result set size.
 		int totalResultSetSize = 0;
-		// ArrayList<String[]> LineInfo = new ArrayList<String[]>();
 		List<List> dfpData = new ArrayList<List>();
 
 		do {
@@ -102,24 +121,19 @@ public class DFPMethods {
 				totalResultSetSize = page.getTotalResultSetSize();
 				int i = page.getStartIndex();
 				for (LineItem lineItem : page.getResults()) {
+					// add whatever you need from the line item here. append
+					// .add the values to token directly below
 					String id = lineItem.getId().toString();
 					String name = lineItem.getName();
 					String status = lineItem.getStatus().toString();
-					// boolean isMissingCreatives =
-					// lineItem.getIsMissingCreatives();
-					// String[] token = new String[3];
+					
 					List<String> token = new ArrayList<String>();
-					// token[0] = (id);
-					// token[1] = name;
-					// token[2] = status;
 					token.add(id);
 					token.add(name);
 					token.add(status);
-					// token.add(isMissingCreatives);
-					// System.out.printf(
-					// "%d) Line item with ID %d and name '%s' was found.%n",
-					// i++,
-					// lineItem.getId(), lineItem.getName());
+					
+					
+					// once full token is assembled, add token to your return list
 					dfpData.add(token);
 
 				}
@@ -131,7 +145,15 @@ public class DFPMethods {
 		return dfpData;
 	}
 	
-	
+	/** Creates a map/dictionary of LIDs -> ad slot sizes. Used to confirm that
+	 * a line item can accept a certain size creative.
+	 * 
+	 * @param dfpServices
+	 * @param session
+	 * @param LIDs
+	 * @return lineItemSizes
+	 * @throws Exception
+	 */
 	public static Map<String, List<String>> getLineSizes(
 			DfpServices dfpServices, DfpSession session, String LIDs) throws Exception {
 
@@ -163,6 +185,7 @@ public class DFPMethods {
 					CreativePlaceholder[] placeholders = lineItem.getCreativePlaceholders();
 					List<String> sizes = new ArrayList<String>();
 					for (CreativePlaceholder x : placeholders) {
+						// writes the size using our standard "widthxheight" format
 						String slotSize = x.getSize().getWidth().toString() +
 								"x" + 
 								x.getSize().getHeight().toString();
@@ -179,7 +202,14 @@ public class DFPMethods {
 	}
 
 	
-	
+	/** creates a map/dictionary of each source LID and the ACTIVE creative 
+	 * associated with it. Used to match creative with the correct target LID.
+	 * @param dfpServices
+	 * @param session
+	 * @param LIDs
+	 * @return LICAList
+	 * @throws Exception
+	 */
 	public static Map<String, List<String>> getLICAs(DfpServices dfpServices, 
 			DfpSession session, String LIDs) throws Exception {
 		
@@ -197,6 +227,8 @@ public class DFPMethods {
 		    // Retrieve a small amount of line item creative associations at a time, paging through
 		    // until all line item creative associations have been retrieved.
 		    int totalResultSetSize = 0;
+		    
+		    // this is not actually a list; it is a map. May want to rename...
 		    Map<String, List<String>> LICAList = new HashMap<String, List<String>>();
 		    do {
 		      LineItemCreativeAssociationPage page =
@@ -207,6 +239,7 @@ public class DFPMethods {
 		        totalResultSetSize = page.getTotalResultSetSize();
 		        int i = page.getStartIndex();
 		        for (LineItemCreativeAssociation lica : page.getResults()) {
+		        	// This method retrieves only ACTIVE creative
 		        	if (lica.getStatus().getValue() == "INACTIVE") {
 		        		continue;
 		        	}
@@ -225,9 +258,6 @@ public class DFPMethods {
 			          }
 			        	if (LICAList.containsKey(lineItemId)) {
 			        		LICAList.get(lineItemId).add(creativeID);
-			        		//List<String> newList = LICAList.get(lineItemId);
-			        			//	newList.add(creativeID);
-	        				//LICAList.put(lineItemId, newList);
 			        	} else {
 			        		LICAList.put(lineItemId, creativeIDs);
 			        	}
@@ -237,14 +267,24 @@ public class DFPMethods {
 
 		      statementBuilder.increaseOffsetBy(StatementBuilder.SUGGESTED_PAGE_LIMIT);
 		    } while (statementBuilder.getOffset() < totalResultSetSize);
-
+		    
+		    // these print statements are not necessary, but are good sanity checks.
 		    System.out.printf("getLICAs--Number of results found: %d%n", totalResultSetSize);
 		    System.out.println("*number does not exclude inactive creative");
 		return LICAList;
 	}
 
 	
-	
+	/** creates a map/dictionary of each source creative ID and its dimensions.
+	 *  Used to confirm that a creative's size matches one of the ad sizes for
+	 *  its target line item.
+	 *  
+	 * @param dfpServices
+	 * @param session
+	 * @param creativeIDs
+	 * @return creativeSizes
+	 * @throws Exception
+	 */
 	public static Map<String, String> getCreativeSizes(DfpServices dfpServices, 
 			DfpSession session, String creativeIDs) throws Exception {
 		String idQuery = creativeIDs.replace("]", ")").replace("[", "(");
@@ -286,7 +326,20 @@ public class DFPMethods {
 	}
 	
 	
-	
+	/**Creates LICAs for target Line items by iterating through and checking
+	 * each creative from its paired source Line Item. Returns a list of all
+	 * trafficked creative, which is then sent to the next method to be activated,
+	 * if necessary. 
+	 * 
+	 * @param dfpServices
+	 * @param session
+	 * @param LIDPairs
+	 * @param lineItemSizes
+	 * @param sourceLICAs
+	 * @param creativeSizes
+	 * @return
+	 * @throws Exception
+	 */
 	public static HashSet<String> createLICAs(
 			DfpServices dfpServices, DfpSession session, List<List> LIDPairs,
 			Map<String, List<String>> lineItemSizes, Map<String, List<String>> sourceLICAs, 
@@ -302,6 +355,8 @@ public class DFPMethods {
 			String newLID = pair.get(1).toString();
 			List<String> availableCreatives = sourceLICAs.get(oldLID);
 			List<String> adSlotSizes = lineItemSizes.get(newLID);
+			// if you try to make a LICA with incompatible line sizes and
+			// creative sizes, the program will crash.
 			for (String creative: availableCreatives){
 				String creativeSize = creativeSizes.get(creative);
 				boolean sizesMatch = adSlotSizes.contains(creativeSize);
@@ -322,6 +377,9 @@ public class DFPMethods {
 					}
 					
 				} else {
+					// TODO: make separate method or object to hold failed LICAs.
+					// TODO: that way, you can keep track of failures that happen 
+					// TODO: before this step, like when reading the spreadsheet.
 					failedLICAs.add(newLID);
 					continue;
 				}
@@ -348,6 +406,7 @@ public class DFPMethods {
 	      updatedLineItems.add(updatedLineItem);
 	    }
 	    
+	    // print line items that failed and may need to be checked.
 	    int failedLICAscount = 0;
 	    System.out.println("Here are the failed LICAs, if any:");
 	    for (String LICA : failedLICAs) {
@@ -362,13 +421,22 @@ public class DFPMethods {
 	    System.out.println("<end of failed LICAs>");
 	    System.out.println();
 	    
+	    // get rid of duplicate LIDs (target LIDs that may have received creative from different source LIDs)
 	    HashSet<String> setOfUpdatedLineItems = new HashSet<String>(updatedLineItems);
 
 	    return setOfUpdatedLineItems;
 	  }
 
 	
-	
+	/**Checks that each line item that was trafficked is now ACTIVE.
+	 * If a trafficked line item is not active, this method attempts to 
+	 * resume the line (if it is PAUSED) or activated the line (if it is INACTIVE).
+	 * 
+	 * @param dfpServices
+	 * @param session
+	 * @param LIDs
+	 * @throws Exception
+	 */
 	public static void activateLineItems(
 			DfpServices dfpServices, DfpSession session, String LIDs) throws Exception {
 		String LIDQuery = LIDs.replace("]", ")").replace("[", "(");
@@ -490,7 +558,12 @@ public class DFPMethods {
 	    
 	}
 	
-	
+	/** This class was not designed to be run on its own. This main method 
+	 * was mainly to test that the methods above work fine.
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
 		// Generate a refreshable OAuth2 credential.
 		Credential oAuth2Credential = new OfflineCredentials.Builder()
