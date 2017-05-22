@@ -120,6 +120,23 @@ public class CreativeShare {
 		return lidPairs;
 	}
 	
+	/** Method encapsulates reading PLIDs from a spreadsheet and 
+	 * converting them to LIDs. 
+	 * @param filepath
+	 * @param dfpServices
+	 * @param session
+	 * @return LIDSets
+	 * @throws IOException
+	 */
+	public static List<List> getLIDsfromPLIDs (String filepath, DfpServices dfpServices, DfpSession session) throws IOException {
+		List<List> plidPairs = Spreadsheet.readXLSFileForLIDPairs(filepath);
+		List<String> allPLIDs = getPLIDList(plidPairs);
+		String lidQuery = queryBuilder(allPLIDs);
+		Map<String, String> plidsToLIDsMap = DFPMethods.mapLIDs(dfpServices, session, lidQuery);
+		
+		List<List> lidSets = getLIDPairs(plidPairs, plidsToLIDsMap);
+		return lidSets;
+	}
 	
 	
 	/** Update workbookPath to path for your document. Otherwise should be
@@ -131,10 +148,6 @@ public class CreativeShare {
 	public static void main(String[] args) throws Exception {
 		
 		String workbookPath = "C:\\Users\\mthompson\\Downloads\\newCreativeShare.xls";
-		List<List> plidPairs;
-		List<String> allPLIDs;
-		String lidQuery;
-		Map<String, String> plidsToLIDs;
 		List<List> LIDSets;
 		List<String> oldLIDs = new ArrayList<String>();
 		List<String> newLIDs = new ArrayList<String>();
@@ -154,22 +167,12 @@ public class CreativeShare {
 		DfpServices dfpServices = new DfpServices();
 		
 		
-		/* These methods convert your PLID values from the spreadsheet into DFP LIDs,
-		 * which are much more efficient to use in the rest of the program.
-		 * If you ever want to change this to read LIDs directly,
-		 * revise variable LIDSets to read your spreadsheet and
-		 * disable all the methods before it (other than the required DFP ones).
+		/* This method reads a worksheet of PLIDs and convert them to LIDs.
+		 * If your worksheet already contains LIDs, use the following instead:
+		 * "LIDSets = Spreadsheet.readXLSFileForLIDPairs(workbookPath);"
 		 */
-		plidPairs = Spreadsheet.readXLSFileForLIDPairs(workbookPath);
-		allPLIDs = getPLIDList(plidPairs);
-		lidQuery = queryBuilder(allPLIDs);
+		LIDSets = getLIDsfromPLIDs(workbookPath, dfpServices, session);
 		
-
-		
-		
-		plidsToLIDs = DFPMethods.mapLIDs(dfpServices, session, lidQuery);
-		
-		LIDSets = getLIDPairs(plidPairs, plidsToLIDs);
 		
 		/* Retrieve info to check that creative can be shared from source line
 		 * to target line
