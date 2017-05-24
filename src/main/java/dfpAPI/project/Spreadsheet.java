@@ -48,7 +48,6 @@ public class Spreadsheet {
 
 		HSSFSheet sheet = wb.getSheetAt(0);
 		HSSFRow row;
-		HSSFCell cell;
 		ArrayList<Integer> values = new ArrayList<Integer>();
 
 		Iterator<Row> rows = sheet.rowIterator();
@@ -57,7 +56,7 @@ public class Spreadsheet {
 			row = (HSSFRow) rows.next();
 
 			// specify column to read from
-			HSSFCell contents = row.getCell(4);
+			HSSFCell contents = row.getCell(0);
 			if (contents != null) {
 				int value;
 				
@@ -77,6 +76,7 @@ public class Spreadsheet {
 				}
 			}
 		}
+		wb.close();
 		return values;
 	}
 	
@@ -102,7 +102,6 @@ public class Spreadsheet {
 
 		HSSFSheet sheet = wb.getSheetAt(0);
 		HSSFRow row;
-		HSSFCell cell;
 		List<List> sets = new ArrayList<List>();
 		
 		Iterator<Row> rows = sheet.rowIterator();
@@ -145,6 +144,7 @@ public class Spreadsheet {
 				}
 			}
 		}
+		wb.close();
 		return sets;
 	}
 
@@ -187,6 +187,7 @@ public class Spreadsheet {
 		wb.write(fileOut);
 		fileOut.flush();
 		fileOut.close();
+		wb.close();
 	}
 
 	public static void main(String[] args) throws Exception {

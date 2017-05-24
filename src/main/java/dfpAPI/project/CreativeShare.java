@@ -147,7 +147,7 @@ public class CreativeShare {
 	 */
 	public static void main(String[] args) throws Exception {
 		
-		String workbookPath = "C:\\Users\\mthompson\\Downloads\\newCreativeShare.xls";
+		String workbookPath = "C:\\Users\\mthompson\\Downloads\\testNewCreativeShare.xls";
 		List<List> LIDSets;
 		List<String> oldLIDs = new ArrayList<String>();
 		List<String> newLIDs = new ArrayList<String>();

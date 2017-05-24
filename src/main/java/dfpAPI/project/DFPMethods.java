@@ -559,7 +559,7 @@ public class DFPMethods {
 	}
 	
 	/** This class was not designed to be run on its own. This main method 
-	 * was mainly to test that the methods above work fine.
+	 * was mainly used to test that the methods above work fine.
 	 * 
 	 * @param args
 	 * @throws Exception

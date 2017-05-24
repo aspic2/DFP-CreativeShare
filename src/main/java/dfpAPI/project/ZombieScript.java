@@ -35,7 +35,7 @@ public class ZombieScript {
 		 * from your source document
 		 */
 		InputStream excelFileToRead = new FileInputStream(
-				"C:\\Users\\mthompson\\Downloads\\ZombieOrderLinesReport_04-10-2017_pt1.xls");
+				"C:\\Users\\mthompson\\Downloads\\testZombieReport.xls");
 		
 		ArrayList<Integer> LIDs = Spreadsheet.readXLSFile(excelFileToRead);
 		String LIDString = (String) LIDs.toString();
@@ -57,7 +57,7 @@ public class ZombieScript {
 		List<List> lineInfo = DFPMethods.returnLineInfo(dfpServices, session, LIDString);
 		
 		// Update to the filepath (including file name and extension) for your new doc.
-		String writeTo = "C:\\Users\\mthompson\\Downloads\\ZRResults_04-17-2017_pt1.xls";
+		String writeTo = "C:\\Users\\mthompson\\Downloads\\testResultsZombieReport.xls";
 		
 		Spreadsheet.writeXLSFile(lineInfo, writeTo);
 	}
