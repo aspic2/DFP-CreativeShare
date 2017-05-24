@@ -15,6 +15,9 @@ CreativeShare was made using Maven. It uses the following:
 1. Most recent dfp api (201702, as of writing)  
 2. Apache POI  
 
+Also, you need to add an ads.properties file to your project to access DFP.
+Once you set everything up, add the file like so: src/main/java/ads.properties
+
 # Instructions
 1. Create an .xls worksheet as specified:  
 	- Column A contains source PLIDs (Line Items that already have creative)  
