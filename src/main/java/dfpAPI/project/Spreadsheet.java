@@ -103,12 +103,10 @@ public class Spreadsheet {
 		HSSFSheet sheet = wb.getSheetAt(0);
 		HSSFRow row;
 		List<List> sets = new ArrayList<List>();
-		
 		Iterator<Row> rows = sheet.rowIterator();
 
 		while (rows.hasNext()) {
 			row = (HSSFRow) rows.next();
-
 			// specify column to read from
 			HSSFCell cellA = row.getCell(0);
 			HSSFCell cellC = row.getCell(2);
@@ -138,7 +136,6 @@ public class Spreadsheet {
 							break;
 						}
 					}	
-						
 				default:
 					break;
 				}
@@ -147,6 +144,7 @@ public class Spreadsheet {
 		wb.close();
 		return sets;
 	}
+
 
 	/** Method accepts a List of Lists of items to write to an excel file.
 	 * Pass in your list and the path where you want to write your new file
@@ -157,8 +155,6 @@ public class Spreadsheet {
 	 * @throws IOException
 	 */
 	public static void writeXLSFile(List<List> sourceList, String targetFile) throws IOException {
-
-
 		// name of sheet
 		String sheetName = "Zombie Report";
 
@@ -171,13 +167,11 @@ public class Spreadsheet {
 			List<String> line = sourceList.get(r);
 
 			// iterating c number of columns
-			
 			int elements = line.size();
 			for (int c = 0; c < elements; c++) {
 				HSSFCell cell = row.createCell(c);
 
 				cell.setCellValue(line.get(c));
-			
 			}
 		}
 

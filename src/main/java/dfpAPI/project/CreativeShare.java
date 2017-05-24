@@ -16,10 +16,6 @@ import com.google.api.ads.common.lib.exception.OAuthException;
 import com.google.api.ads.common.lib.exception.ValidationException;
 import com.google.api.ads.dfp.lib.client.DfpSession;
 import com.google.api.client.auth.oauth2.Credential;
-
-import dfpAPI.project.DFPMethods;
-import dfpAPI.project.Spreadsheet;
-
 import com.google.api.ads.dfp.axis.factory.DfpServices;
 import com.google.api.ads.dfp.axis.utils.v201702.StatementBuilder;
 import com.google.api.ads.dfp.axis.v201702.ApiException;
@@ -29,6 +25,9 @@ import com.google.api.ads.dfp.axis.v201702.LineItemCreativeAssociationPage;
 import com.google.api.ads.dfp.axis.v201702.LineItemCreativeAssociationServiceInterface;
 import com.google.api.ads.dfp.axis.v201702.LineItemPage;
 import com.google.api.ads.dfp.axis.v201702.LineItemServiceInterface;
+
+import dfpAPI.project.DFPMethods;
+import dfpAPI.project.Spreadsheet;
 
 public class CreativeShare {
 	
@@ -206,7 +205,6 @@ public class CreativeShare {
 			}
 		}
 		
-		
 		/* Prepare creative and target line, then create the new LICAs
 		 * 
 		 */
@@ -226,5 +224,3 @@ public class CreativeShare {
 	}
 
 }
-
-

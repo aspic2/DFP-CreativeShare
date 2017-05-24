@@ -40,15 +40,17 @@ public class ZombieScript {
 		ArrayList<Integer> LIDs = Spreadsheet.readXLSFile(excelFileToRead);
 		String LIDString = (String) LIDs.toString();
 
-		// Generate a refreshable OAuth2 credential.
-		Credential oAuth2Credential = new OfflineCredentials.Builder().forApi(Api.DFP).fromFile().build()
+		Credential oAuth2Credential = new OfflineCredentials.Builder()
+				.forApi(Api.DFP)
+				.fromFile()
+				.build()
 				.generateCredential();
-
-		// Construct a DfpSession.
-		DfpSession session = new DfpSession.Builder().fromFile().withOAuth2Credential(oAuth2Credential).build();
-
+		DfpSession session = new DfpSession.Builder()
+				.fromFile()
+				.withOAuth2Credential(oAuth2Credential)
+				.build();
 		DfpServices dfpServices = new DfpServices();
-		
+    
 		/* Go to this method (returnLinItemInfo in DFPMethods) in its 
 		 * appropriate .java file to find instructions on how to customize 
 		 * what you retrieve from DFP. You can return
